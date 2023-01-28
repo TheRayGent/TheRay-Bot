@@ -1,2 +1,4 @@
 
 token.env
+config.env
+secret.env

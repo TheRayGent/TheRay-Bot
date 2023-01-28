@@ -10,7 +10,7 @@ bot = commands.Bot(command_prefix="!", help_command=None, intents=disnake.Intent
 
 @bot.event
 async def on_ready():
-    print("Бот работает!")
+    print("Бот работает")
 
 bot_token = config["bot_token"]
 bot.run(bot_token)

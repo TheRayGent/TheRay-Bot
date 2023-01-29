@@ -12,5 +12,9 @@ bot = commands.Bot(command_prefix=config["prefix"], intents=disnake.Intents.all(
 async def on_ready():
     print("Бот работает")
 
+@bot.slash_command(name='пинг', description='хз')
+async def ping(inter):
+    await inter.response.send_message("Понг!", ephemeral=True)
+
 bot_token = config["bot_token"]
 bot.run(bot_token)

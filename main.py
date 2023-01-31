@@ -5,6 +5,7 @@ from disnake.ext import commands
 
 import os
 from dotenv import dotenv_values
+from datetime import datetime
 
 config = dotenv_values("config.env")
 
@@ -25,7 +26,12 @@ async def on_member_join(member):
     embed = disnake.Embed(
         title="Новый участник!",
         description=f"{member.mention}",
-        color=0xDA5B00
+        color=0xDA5B00,
+        timestamp=datetime.now()
+    )
+    embed.set_author(
+        name=f"{member.name}#{member.discriminator}",
+        icon_url=str(member.display_avatar.url)
     )
 
     embed.set_thumbnail(url=str(member.display_avatar.url))
@@ -53,10 +59,6 @@ async def activity(inter: disnake.AppCmdInter,
 
     await bot.change_presence(activity = disnake.Activity(name = f'{a_text}', type = a_type))
     await inter.response.send_message('Статус бота изменён!', ephemeral=True, delete_after=3)
-
-@bot.slash_command(name='пинг', description='хз')
-async def ping(inter):
-    await inter.response.send_message("Понг!", ephemeral=True)
 
 
 

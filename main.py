@@ -1,3 +1,5 @@
+from keep_alive import keep_alive
+
 import disnake
 from disnake.ext import commands
 
@@ -28,6 +30,13 @@ async def on_member_join(member):
 
     embed.set_thumbnail(url=str(member.display_avatar.url))
     await channel.send(embed=embed)
+
+
+
+@bot.slash_command()
+async def clear(inter, amount: int):
+    await inter.channel.purge(limit=amount + 1)
+    await inter.response.send_message(f"Удалено {amount} сообщений", ephemeral=True, delete_after=3)
 
 
 
@@ -91,5 +100,6 @@ async def old_message(ctx,
 
 
 
+keep_alive()
 bot_token = config["bot_token"]
 bot.run(bot_token)

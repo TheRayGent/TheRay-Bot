@@ -1,4 +1,5 @@
 from keep_alive import keep_alive
+from time import sleep
 
 import disnake
 from disnake.ext import commands
@@ -6,6 +7,7 @@ from disnake.ext import commands
 import os
 from dotenv import dotenv_values
 from datetime import datetime
+from datetime import time
 
 config = dotenv_values("config.env")
 
@@ -16,6 +18,10 @@ bot = commands.Bot(command_prefix='!', intents=disnake.Intents.all())
 @bot.event
 async def on_ready():
     print("Бот работает")
+    while True:
+         time_t=time()
+         await bot.change_presence(activity = disnake.Activity(name = f'время {time_t}', type = disnake.ActivityType.watching))
+         sleep(60)
 
 
 

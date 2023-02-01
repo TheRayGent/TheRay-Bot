@@ -1,5 +1,5 @@
-from keep_alive import keep_alive
-from time import sleep
+#from keep_alive import keep_alive
+import time
 
 import disnake
 from disnake.ext import commands
@@ -7,21 +7,44 @@ from disnake.ext import commands
 import os
 from dotenv import dotenv_values
 from datetime import datetime
-from datetime import time
 
 config = dotenv_values("config.env")
 
 bot = commands.Bot(command_prefix='!', intents=disnake.Intents.all())
 
+CENSORED_WORDS = ['даун', 'пидор']
 
 
 @bot.event
 async def on_ready():
     print("Бот работает")
-    while True:
-         time_t=time()
-         await bot.change_presence(activity = disnake.Activity(name = f'время {time_t}', type = disnake.ActivityType.watching))
-         sleep(60)
+    """while True:
+                     time_t=str(datetime.now())
+                     time_t=time_t[11:16]
+                     await bot.change_presence(activity = disnake.Activity(name = f'время {time_t}', type = disnake.ActivityType.watching))
+                     time.sleep(60)"""
+
+@bot.event
+async def on_message(message):
+    count=False
+    for content in message.content.split():
+        for censored_words in CENSORED_WORDS:
+            content=content.lower()
+            if content.count(censored_words)>0 and count==False:
+                count=True
+                await message.channel.send(f'{message.author.mention} неа')
+
+
+@bot.event
+async def on_message_edit(message):
+    count=False
+    for content in message.content.split():
+        for censored_words in CENSORED_WORDS:
+            content=content.lower()
+            if content.count(censored_words)>0 and count==False:
+                count=True
+                await message.channel.send(f'{message.author.mention} неа')
+
 
 
 
@@ -45,11 +68,19 @@ async def on_member_join(member):
 
 
 
-@bot.slash_command()
-async def clear(inter, amount: int):
-    await inter.channel.purge(limit=amount + 1)
-    await inter.response.send_message(f"Удалено {amount} сообщений", ephemeral=True, delete_after=3)
-
+@bot.slash_command(description='Удаление нужного кол-ва сообщений')
+async def clear(inter, amount: int = commands.Param(name='кол-во', description='Напишите нужное кол-во')):
+    await inter.channel.purge(limit=amount)
+    amount=str(amount)
+    am=amount[-2::]
+    am1=amount[-1]
+    if am=='11' or am=='12' or am =='13' or am=='14':
+        end='ий'
+    else:
+        if am1=='1': end='ие'
+        elif am1=='2' or am1=='3' or am1=='4': end='ия'
+        else: end='ий'
+    await inter.response.send_message(f"Удалено {amount} сообщен{end}", ephemeral=True, delete_after=5)
 
 
 @bot.slash_command(description='Выбор статуса/активности для бота')
@@ -58,7 +89,7 @@ async def activity(inter: disnake.AppCmdInter,
         choices=['"Слушает"', '"Играет"', '"Смотрит"', '"Без активности"']),
     a_text: str = commands.Param(None, name='текст', description='Напишите текст статуса')
 ):
-    if a_type=='"Слушает"': a_type=disnake.ActivityType.listening
+    if a_type=='"Слушает"': a_type=disnake.ActivityType.listening, a_name=name
     elif a_type=='"Играет"': a_type=disnake.ActivityType.playing
     elif a_type=='"Смотрит"': a_type=disnake.ActivityType.watching
     elif a_type=='"Без активности"': a_type=disnake.ActivityType.unknown
@@ -108,6 +139,6 @@ async def old_message(ctx,
 
 
 
-keep_alive()
+#keep_alive()
 bot_token = config["bot_token"]
 bot.run(bot_token)

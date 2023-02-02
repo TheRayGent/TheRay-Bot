@@ -1,5 +1,5 @@
 #from keep_alive import keep_alive
-import time
+#import time
 
 import disnake
 from disnake.ext import commands
@@ -12,7 +12,7 @@ config = dotenv_values("config.env")
 
 bot = commands.Bot(command_prefix='!', intents=disnake.Intents.all())
 
-CENSORED_WORDS = ['даун', 'пидор']
+CENSORED_WORDS = ['даун','пидор','пидар','гандон','петушар', 'ебальник']
 
 
 @bot.event
@@ -27,24 +27,24 @@ async def on_ready():
 @bot.event
 async def on_message(message):
     count=False
-    for content in message.content.split():
-        for censored_words in CENSORED_WORDS:
-            content=content.lower()
-            if content.count(censored_words)>0 and count==False:
-                count=True
-                await message.channel.send(f'{message.author.mention} неа')
-
+    content = message.content
+    for censored_words in CENSORED_WORDS:
+        content_l=content.lower()
+        if content_l.count(censored_words)>0 and count==False:
+            count=True
+            await message.delete()
+            await message.channel.send(f'{message.author.mention} написал в сообщении плохое слово!')
 
 @bot.event
-async def on_message_edit(message):
+async def on_message_edit(before, after):
     count=False
-    for content in message.content.split():
-        for censored_words in CENSORED_WORDS:
-            content=content.lower()
-            if content.count(censored_words)>0 and count==False:
-                count=True
-                await message.channel.send(f'{message.author.mention} неа')
-
+    content = after.content
+    for censored_words in CENSORED_WORDS:
+        content_l=content.lower()
+        if content_l.count(censored_words)>0 and count==False:
+            count=True
+            await after.delete()
+            await after.channel.send(f'{after.author.mention} написал в сообщении плохое слово!')
 
 
 
